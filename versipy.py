@@ -153,20 +153,26 @@ if st.button("🔍 CARI RUMAH SAKIT", type="primary"):
                 st.subheader("Peta Lokasi")
                 
                 
-                user_data = pd.DataFrame({
+                peta_rs = top_3[['lat', 'lon']].copy()
+                peta_rs['color'] = '#FF0000' 
+                peta_rs['size'] = 100        
+                
+                
+                peta_user = pd.DataFrame({
                     'lat': [user_lat],
                     'lon': [user_long],
-                    'nama': ['📍 LOKASI ANDA'], # Label
-                    'jenis_marker': ['User']
+                    'color': ['#0000FF'],    
+                    'size': [100]
                 })
-                rs_data_map = top_3[['lat', 'lon', 'nama', 'jenis_marker']]
                 
                 
-                map_combined = pd.concat([rs_data_map, user_data], ignore_index=True)
+                map_combined = pd.concat([peta_rs, peta_user], ignore_index=True)
                 
                 
-                st.map(map_combined, zoom=10)
-                st.caption("📍 Titik lokasi anda juga ditampilkan di peta.")
+                st.map(map_combined, latitude='lat', longitude='lon', color='color', size='size', zoom=10)
+                
+                
+                st.caption("🔴 Merah: Rumah Sakit | 🔵 Biru: Lokasi Anda")
                 
         else:
             st.error("MAAF: Tidak ditemukan RS yang sesuai kriteria di radius 100 KM.")
