@@ -71,7 +71,7 @@ def cek_urgensi(keluhan):
     
     def is_similar(word, keyword_list):
         
-        matches = difflib.get_close_matches(word, keyword_list, n=1, cutoff=0.8)
+        matches = difflib.get_close_matches(word, keyword_list, n=1, cutoff=0.6)
         return True if matches else False
 
 
