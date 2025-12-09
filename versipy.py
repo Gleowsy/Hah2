@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import math
 import re
-
+import difflib
 
 st.set_page_config(page_title="AI Hospital Locator", page_icon="🚑", layout="wide")
 
@@ -61,12 +61,31 @@ def hitung_jarak(lat1, lon1, lat2, lon2):
 
 def cek_urgensi(keluhan):
     keluhan = keluhan.lower()
-    if any(x in keluhan for x in ["jantung", "sesak", "pingsan", "darah", "kritis", "kecelakaan", "mati"]):
-        return 1, "🔴 DARURAT (Butuh Penanganan Segera)"
-    elif any(x in keluhan for x in ["patah", "demam", "muntah", "luka", "sakit"]):
-        return 2, "🟡 SEDANG (Butuh Dokter)"
-    else:
-        return 3, "🟢 RINGAN (Rawat Jalan)"
+    kata_kunci = keluhan.split() 
+    
+    
+    keywords_lv1 = ["jantung", "sesak", "pingsan", "darah", "kritis", "kecelakaan", "mati", "kejang", "stroke"]
+    
+    keywords_lv2 = ["patah", "demam", "muntah", "luka", "sakit", "nyeri", "diare"]
+    
+    
+    def is_similar(word, keyword_list):
+        
+        matches = difflib.get_close_matches(word, keyword_list, n=1, cutoff=0.8)
+        return True if matches else False
+
+
+    for kata in kata_kunci:
+        if kata in keywords_lv1 or is_similar(kata, keywords_lv1):
+            return 1, "🔴 DARURAT (Butuh Penanganan Segera)"
+            
+    
+    for kata in kata_kunci:
+        if kata in keywords_lv2 or is_similar(kata, keywords_lv2):
+            return 2, "🟡 SEDANG (Butuh Dokter)"
+            
+    
+    return 3, "🟢 RINGAN (Rawat Jalan)"
 
 
 
