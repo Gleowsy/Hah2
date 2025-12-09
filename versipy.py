@@ -129,7 +129,7 @@ if st.button("🔍 CARI RUMAH SAKIT", type="primary"):
         if candidates:
             
             if candidates:
-            df_hasil = pd.DataFrame(candidates)
+                df_hasil = pd.DataFrame(candidates)
             
             
             if urgensi == 1:
