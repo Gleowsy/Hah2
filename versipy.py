@@ -71,7 +71,7 @@ def cek_urgensi(keluhan):
 
 
 st.title("AI Hospital Recommendation System")
-st.markdown("Sistem pencarian Rumah Sakit cerdas berbasis **Urgensi & Jarak Terdekat** (Full Dataset).")
+
 st.divider()
 
 
@@ -94,7 +94,7 @@ if st.button("🔍 CARI RUMAH SAKIT", type="primary"):
     df_rs = load_and_prep_data()
     
     if df_rs.empty:
-        st.error("Gagal memuat database RS! Pastikan file HospInfo.csv ada.")
+        st.error
     elif not keluhan_input:
         st.warning("Mohon isi keluhan terlebih dahulu.")
     else:
@@ -128,8 +128,18 @@ if st.button("🔍 CARI RUMAH SAKIT", type="primary"):
         
         if candidates:
             
+            if candidates:
             df_hasil = pd.DataFrame(candidates)
-            df_hasil = df_hasil.sort_values(by='jarak_user')
+            
+            
+            if urgensi == 1:
+                
+                st.toast("🚨 Mode Darurat: Memprioritaskan lokasi terdekat!")
+                df_hasil = df_hasil.sort_values(by='jarak_user', ascending=True)
+            else:
+                
+                st.toast("✅ Mode Normal: Memprioritaskan ketersediaan kamar!")
+                df_hasil = df_hasil.sort_values(by='bed_kosong', ascending=False)
             
             
             top_3 = df_hasil.head(3)
