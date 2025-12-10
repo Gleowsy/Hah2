@@ -40,6 +40,7 @@ def load_and_prep_data():
                     "lon": real_long, 
                     "bed_kosong": stok_bed,
                     "ada_ugd": row['Emergency Services']
+
                 })
         
         
@@ -76,7 +77,7 @@ def cek_urgensi(keluhan):
     kata_kunci = keluhan.split() 
     
     
-    keywords_lv1, keywords_lv2 = load_knowledge_base
+    keywords_lv1, keywords_lv2 = load_knowledge_base()
     
     
     def is_similar(word, keyword_list):
