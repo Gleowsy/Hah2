@@ -4,7 +4,7 @@ import math
 import re
 import difflib
 
-st.set_page_config(page_title="AI Hospital Locator", page_icon="🚑", layout="wide")
+st.set_page_config(page_title="HASTECARE", layout="wide")
 
 
 @st.cache_data 
@@ -48,7 +48,19 @@ def load_and_prep_data():
     except Exception as e:
         return pd.DataFrame()
 
-
+@st.cache_data
+def load_knowledge_base():
+    try:
+        df_penyakit = pd.read_csv('Penyakit.csv')
+        df_penyakit['keyword'] = df_penyakit['keyword'].str.lower()
+        
+        list_lv1 = df_penyakit[df_penyakit['level'] == 1]['keyword'].tolist()
+        list_lv2 = df_penyakit[df_penyakit['level'] == 2]['keyword'].tolist()
+        
+        return list_lv1, list_lv2
+    except Exception as e:
+        return ["jantung", "darah", "kritis"], ["demam", "patah"]
+    
 def hitung_jarak(lat1, lon1, lat2, lon2):
     R = 6371
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
@@ -64,9 +76,7 @@ def cek_urgensi(keluhan):
     kata_kunci = keluhan.split() 
     
     
-    keywords_lv1 = ["jantung", "sesak", "pingsan", "darah", "kritis", "kecelakaan", "mati", "kejang", "stroke"]
-    
-    keywords_lv2 = ["patah", "demam", "muntah", "luka", "sakit", "nyeri", "diare"]
+    keywords_lv1, keywords_lv2 = load_knowledge_base
     
     
     def is_similar(word, keyword_list):
@@ -89,7 +99,7 @@ def cek_urgensi(keluhan):
 
 
 
-st.title("AI Hospital Recommendation System")
+st.title("HASTECARE")
 
 st.divider()
 
@@ -107,7 +117,7 @@ with col1:
     keluhan_input = st.text_input("Masukkan Keluhan / Gejala Pasien:", placeholder="Contoh: Patah tulang, sesak napas...")
 
 
-if st.button("🔍 CARI RUMAH SAKIT", type="primary"):
+if st.button("CARI RUMAH SAKIT", type="primary"):
     
    
     df_rs = load_and_prep_data()
@@ -121,9 +131,9 @@ if st.button("🔍 CARI RUMAH SAKIT", type="primary"):
         urgensi, label_status = cek_urgensi(keluhan_input)
         
         
-        if urgensi == 1: st.error(f"STATUS AI: {label_status}")
-        elif urgensi == 2: st.warning(f"STATUS AI: {label_status}")
-        else: st.success(f"STATUS AI: {label_status}")
+        if urgensi == 1: st.error(f"{label_status}")
+        elif urgensi == 2: st.warning(f"{label_status}")
+        else: st.success(f"{label_status}")
         
         
         candidates = []
@@ -147,11 +157,10 @@ if st.button("🔍 CARI RUMAH SAKIT", type="primary"):
         
         if candidates:
             
-            if candidates:
-                df_hasil = pd.DataFrame(candidates)
+            df_hasil = pd.DataFrame(candidates)
             
             
-            if urgensi == 1:
+            if urgensi == 1 or urgensi == 2:
                 
                 st.toast("🚨 Mode Darurat: Memprioritaskan lokasi terdekat!")
                 df_hasil = df_hasil.sort_values(by='jarak_user', ascending=True)
@@ -163,7 +172,7 @@ if st.button("🔍 CARI RUMAH SAKIT", type="primary"):
             
             top_3 = df_hasil.head(3)
             
-            st.subheader(f"🏥 Ditemukan {len(candidates)} RS Terdekat (Top 3):")
+            st.subheader(f"🏥 Ditemukan {len(candidates)} RS Terdekat:")
             
            
             c_text, c_map = st.columns([1, 1])
